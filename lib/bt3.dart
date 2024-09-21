@@ -8,12 +8,52 @@ BigInt giaiThua(BigInt n) {
   return result;
 }
 
-int fibonacci(int n) {
-  List<int> fib = [0, 1];
-  for (int i = 2; i <= n; i++) {
-    fib.add(fib[i - 1] + fib[i - 2]);
+BigInt fibonacciMatrix(int n) {
+  if (n < 0) return BigInt.zero;
+  if (n == 0) return BigInt.zero;
+  if (n == 1) return BigInt.one;
+
+  // Ma trận cơ sở [[1, 1], [1, 0]]
+  List<List<BigInt>> F = [
+    [BigInt.one, BigInt.one],
+    [BigInt.one, BigInt.zero]
+  ];
+
+  // Nâng ma trận cơ sở lên lũy thừa (n - 1)
+  _matrixPower(F, n - 1);
+
+  // Kết quả Fibonacci là F[0][0] sau khi tính xong
+  return F[0][0];
+}
+
+void _matrixPower(List<List<BigInt>> F, int n) {
+  if (n <= 1) return;
+
+  // Ma trận cơ sở để nhân
+  List<List<BigInt>> M = [
+    [BigInt.one, BigInt.one],
+    [BigInt.one, BigInt.zero]
+  ];
+
+  _matrixPower(F, n ~/ 2); // Đệ quy tính lũy thừa ma trận
+  _multiplyMatrices(F, F); // Nhân ma trận F với chính nó
+
+  if (n % 2 != 0) {
+    _multiplyMatrices(F, M); // Nhân thêm ma trận cơ sở nếu n lẻ
   }
-  return fib[n];
+}
+
+void _multiplyMatrices(List<List<BigInt>> F, List<List<BigInt>> M) {
+  // Tính toán nhân hai ma trận 2x2
+  BigInt x = F[0][0] * M[0][0] + F[0][1] * M[1][0];
+  BigInt y = F[0][0] * M[0][1] + F[0][1] * M[1][1];
+  BigInt z = F[1][0] * M[0][0] + F[1][1] * M[1][0];
+  BigInt w = F[1][0] * M[0][1] + F[1][1] * M[1][1];
+
+  F[0][0] = x;
+  F[0][1] = y;
+  F[1][0] = z;
+  F[1][1] = w;
 }
 
 bool isPrime(int n) {
@@ -66,7 +106,7 @@ void main() {
     print('Số lớn thứ hai là số ${soThu2LonNhat % 2 == 0 ? 'chẵn' : 'lẻ'}');
     print('Số lớn thứ hai ${isPrime(soThu2LonNhat) ? 'là' : 'không phải là'} số nguyên tố');
     print('Giai thừa của số lớn thứ hai là: ${giaiThua(BigInt.from(soThu2LonNhat))}');
-    print('Số Fibonacci thứ $soThu2LonNhat là: ${fibonacci(soThu2LonNhat)}');
+    print('Số Fibonacci thứ $soThu2LonNhat là: ${fibonacciMatrix(soThu2LonNhat)}');
   }
 }
 
